@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Rescisão Grátis — Descubra se a Empresa Te Pagou Certo</title>
+<meta name="description" content="Calcule grátis sua rescisão em 1 minuto e descubra se a empresa te pagou tudo o que deve: saldo, aviso, 13º, férias e FGTS. Feito por advogado. Sem cadastro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Marcellus&family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --dark:#0b2a28;--dark2:#082220;--panel:#0f322f;--gold:#c7a15c;--gold2:#d8c091;
+    --cream:#f3efe6;--card:#faf7f0;--ink:#123a37;--ink2:#4c605a;--light:#c6d1ca;--muted:#8fa39b;
+    --green:#0f9d58;--green2:#0c8248;--greendk:#0b6e3f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Mulish',sans-serif;background:var(--dark);color:#f5f1e8;-webkit-font-smoothing:antialiased;line-height:1.5;}
+  a{color:var(--gold);text-decoration:none;}
+  a:hover{color:var(--gold2);}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(18px,5vw,40px);}
+  .label{font-family:'Marcellus',serif;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-size:13px;}
+
+  /* botões */
+  .btn{display:inline-block;background:var(--gold);color:var(--dark);font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:17px 32px;border-radius:3px;font-size:14.5px;transition:.2s;border:none;cursor:pointer;font-family:'Mulish',sans-serif;text-align:center;line-height:1.25;}
+  .btn:hover{background:var(--gold2);color:var(--dark);}
+  .btn[disabled]{opacity:.6;cursor:wait;}
+  .btn-green{background:var(--green);color:#fff;box-shadow:0 14px 30px -12px rgba(15,157,88,.7);}
+  .btn-green:hover{background:var(--green2);color:#fff;}
+  .btn-pulse{animation:pulse 2.2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(15,157,88,.5),0 14px 30px -12px rgba(15,157,88,.7);}70%{box-shadow:0 0 0 14px rgba(15,157,88,0),0 14px 30px -12px rgba(15,157,88,.7);}100%{box-shadow:0 0 0 0 rgba(15,157,88,0),0 14px 30px -12px rgba(15,157,88,.7);}}
+
+  /* header — SEM contato/WhatsApp (regra: nada antes de pagar) */
+  header{background:rgba(9,35,33,.92);border-bottom:1px solid rgba(199,161,92,.18);}
+  nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand img{height:44px;width:auto;}
+  .brand .nm{font-family:'Marcellus',serif;font-size:15px;letter-spacing:1.5px;color:#f5f1e8;line-height:1.1;}
+  .brand .sub{font-size:10px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;}
+  .navtag{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:'Marcellus',serif;}
+  .navtag b{color:var(--gold);font-weight:400;}
+
+  /* HERO — calc + texto lado a lado */
+  .hero{background:radial-gradient(120% 90% at 80% 6%,#10403b 0%,#0b2a28 54%,#082220 100%);padding:clamp(28px,4.5vw,56px) 0 clamp(36px,5vw,64px);}
+  .hero-two{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(26px,3.6vw,48px);align-items:start;}
+  .hero-left{padding-top:6px;}
+  .eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .eyebrow .line{width:34px;height:1px;background:var(--gold);flex-shrink:0;}
+  h1.hero-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(31px,4vw,48px);line-height:1.07;letter-spacing:-.5px;color:#f8f5ee;margin:0 0 18px;}
+  h1.hero-title em{font-style:italic;color:var(--gold);}
+  .hero-sub{font-size:clamp(15.5px,1.7vw,18px);line-height:1.7;color:var(--light);margin:0 0 22px;}
+  .hero-sub strong{color:#f5f1e8;font-weight:700;}
+  .badges{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:22px;}
+  .badge{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid rgba(199,161,92,.28);border-radius:40px;padding:8px 14px;font-size:13px;color:#e6ddc9;font-weight:600;}
+  .badge .bi{font-size:14px;}
+  .trustline{display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
+  .trustline .stars{color:#e7bd5a;font-size:16px;letter-spacing:2px;}
+  .trustline .tt{font-size:14px;color:var(--light);}
+  .trustline .tt strong{color:#f5f1e8;font-weight:700;}
+
+  /* CARD calculadora */
+  .calc-card{background:#fff;border-radius:6px;box-shadow:0 34px 80px -38px rgba(0,0,0,.65);color:var(--ink);overflow:hidden;}
+  .calc-head{background:linear-gradient(100deg,#0f322f,#12403a);padding:20px 26px;color:#fff;}
+  .calc-head h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;line-height:1.15;color:#fff;}
+  .calc-head h2 b{color:var(--gold);}
+  .calc-head p{font-size:13px;color:var(--light);margin-top:5px;letter-spacing:.2px;}
+  .calc-body{padding:clamp(20px,3vw,30px) clamp(20px,3vw,30px) clamp(22px,3vw,30px);}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;}
+  .field{display:flex;flex-direction:column;gap:6px;position:relative;}
+  .field.full{grid-column:1 / -1;}
+  .field label{font-size:12.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--ink);display:flex;align-items:center;gap:6px;}
+  .qmark{width:16px;height:16px;border-radius:50%;background:#d8c9a8;color:#6b5a33;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;cursor:help;position:relative;flex-shrink:0;font-family:'Mulish',sans-serif;text-transform:none;}
+  .qmark .tip{display:none;position:absolute;bottom:135%;left:50%;transform:translateX(-50%);background:#0b2a28;color:#f0ece2;font-size:12px;font-weight:500;line-height:1.5;letter-spacing:0;text-transform:none;width:230px;padding:11px 13px;border-radius:6px;box-shadow:0 12px 30px -8px rgba(0,0,0,.5);z-index:20;text-align:left;}
+  .qmark .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#0b2a28;}
+  .qmark:hover .tip,.qmark:focus .tip{display:block;}
+  .inwrap{position:relative;}
+  .field input,.field select{font-family:'Mulish',sans-serif;font-size:16px;color:var(--ink);background:#f7f4ec;border:1.5px solid rgba(18,58,55,.2);border-radius:4px;padding:12px 14px;outline:none;transition:.18s;width:100%;appearance:none;}
+  .field input:focus,.field select:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 3px rgba(15,157,88,.14);}
+  .field.ok input,.field.ok select{border-color:var(--green);}
+  .field .chk{position:absolute;right:12px;top:50%;transform:translateY(-50%) scale(0);transition:transform .2s;color:var(--green);font-weight:800;font-size:16px;pointer-events:none;opacity:0;}
+  .field.ok .chk{transform:translateY(-50%) scale(1);opacity:1;}
+  .field.sel .chk{right:30px;}
+  .hint{font-size:12px;color:#7d8f89;line-height:1.4;}
+  .hint strong{color:#5c6f68;}
+  .money .rs{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-weight:800;color:#7d8f89;font-size:15px;z-index:1;}
+  .money input{padding-left:40px;}
+  .selwrap::after{content:"▾";position:absolute;right:13px;top:50%;transform:translateY(-50%);color:#b0894a;pointer-events:none;font-size:13px;}
+  .err{display:none;background:#fdf0ee;border:1px solid #d9a49a;color:#8a3b2e;font-size:13.5px;line-height:1.5;border-radius:4px;padding:11px 14px;margin-top:16px;}
+  .err.on{display:block;}
+  .calc-body .btn{width:100%;margin-top:20px;font-size:16px;padding:19px 20px;}
+  .assur{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:14px;}
+  .assur span{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:#8a9a94;font-weight:700;}
+  .assur i{font-style:normal;color:var(--green);}
+
+  /* ==== RESULTADO ==== */
+  .result-sec{display:none;background:var(--cream);color:var(--ink);padding:clamp(40px,6vw,72px) 0;}
+  .result-sec.on{display:block;animation:fadeUp .5s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  .res-wrap{max-width:840px;margin:0 auto;}
+  .proc{max-width:520px;margin:0 auto;text-align:center;padding:30px 0;}
+  .proc h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;color:var(--ink);margin-bottom:20px;}
+  .procbar{height:8px;background:#e2dcce;border-radius:20px;overflow:hidden;}
+  .procbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),#3fbd7e);border-radius:20px;transition:width .3s;}
+  .procstep{font-size:14px;color:var(--ink2);margin-top:14px;min-height:20px;font-weight:600;}
+  .res-in{display:none;}
+  .res-in.on{display:block;animation:fadeUp .5s ease both;}
+  .res-eyebrow{text-align:center;margin-bottom:16px;}
+  .res-eyebrow .label{color:#b0894a;}
+  .totalbox{background:linear-gradient(125% 100% at 18% 0%,#12403a,#0b2a28 62%);border:1px solid rgba(199,161,92,.32);border-radius:8px;text-align:center;padding:clamp(28px,4.4vw,44px);margin-bottom:16px;box-shadow:0 30px 70px -42px rgba(11,42,40,.7);}
+  .totalbox .tl{font-family:'Marcellus',serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:#a9bab3;margin-bottom:12px;}
+  .totalbox .tv{font-family:'Mulish',sans-serif;font-weight:800;font-size:clamp(44px,8vw,72px);color:var(--gold);line-height:1;letter-spacing:-1.5px;}
+  .totalbox .tf{font-size:13.5px;color:#9fb0a9;margin-top:12px;line-height:1.5;}
+  .amber{display:flex;gap:13px;align-items:flex-start;background:#fff6e5;border:1px solid #edc971;border-radius:8px;padding:16px 18px;margin-bottom:26px;}
+  .amber .ai{font-size:20px;flex-shrink:0;line-height:1.25;}
+  .amber p{font-size:14px;line-height:1.6;color:#6b4e1e;}
+  .amber strong{color:#8a5a12;}
+  .rescard{background:#fff;border-radius:8px;box-shadow:0 30px 70px -44px rgba(18,58,55,.5);padding:clamp(24px,3.4vw,38px);}
+  .rescard h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px;margin-bottom:6px;color:var(--ink);}
+  .rescard .rsub{font-size:13.5px;color:var(--ink2);margin-bottom:16px;}
+  .rrow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(18,58,55,.09);padding:14px 0;}
+  .rrow:last-of-type{border-bottom:none;}
+  .rrow .rn{font-size:15px;font-weight:700;color:var(--ink);}
+  .rrow .rd{font-size:12.5px;color:#7d8f89;line-height:1.5;margin-top:3px;max-width:440px;}
+  .rrow .rv{font-weight:800;font-size:16px;color:var(--ink);white-space:nowrap;}
+  .rrow .rv.est{color:#b0894a;}
+  .disc{background:#f6f1e4;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:15px 18px;margin-top:18px;}
+  .disc p{font-size:12.5px;color:#6b5a33;line-height:1.6;}
+
+  /* comparativo */
+  .diffbox{background:#fff;border-radius:8px;box-shadow:0 30px 70px -44px rgba(18,58,55,.5);padding:clamp(20px,3vw,30px);margin-bottom:16px;}
+  .diff-in{display:grid;grid-template-columns:1fr 1fr 1fr;}
+  .dcol{padding:8px 16px;text-align:center;border-right:1px solid rgba(18,58,55,.1);}
+  .dcol:last-child{border-right:none;}
+  .dcol .dl{display:block;font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;color:#7d8f89;margin-bottom:8px;font-weight:800;}
+  .dcol .dv{font-family:'Mulish',sans-serif;font-weight:800;font-size:clamp(20px,3vw,28px);line-height:1;letter-spacing:-.5px;}
+  .dcol .dv.correto{color:var(--ink);}
+  .dcol .dv.pago{color:#7d8f89;}
+  .dcol.dest{background:linear-gradient(180deg,rgba(15,157,88,.1),transparent);border-radius:6px;}
+  .dcol .dv.gap{color:var(--green);}
+  .dcol .dv.gap.neg{color:#7d8f89;}
+  .diff-msg{margin-top:14px;padding-top:14px;border-top:1px solid rgba(18,58,55,.1);text-align:center;font-size:15px;line-height:1.6;color:var(--ink);}
+  .diff-msg strong{color:var(--green2);}
+  @media(max-width:600px){.diff-in{grid-template-columns:1fr;}.dcol{border-right:none;border-bottom:1px solid rgba(18,58,55,.1);padding:13px;}.dcol:last-child{border-bottom:none;}}
+
+  /* ==== OFERTA R$97 ==== */
+  .offer-sec{display:none;background:var(--dark);color:#f5f1e8;padding:clamp(44px,6vw,80px) 0;}
+  .offer-sec.on{display:block;}
+  .offer-head{text-align:center;max-width:680px;margin:0 auto clamp(30px,4vw,44px);}
+  .offer-head h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(28px,4vw,42px);line-height:1.12;letter-spacing:-.4px;color:#f8f5ee;margin-top:12px;}
+  .offer-head h2 em{font-style:italic;color:var(--gold);}
+  .offer-head p{font-size:16.5px;line-height:1.7;color:var(--light);margin-top:16px;}
+  .offer-card{max-width:920px;margin:0 auto;background:var(--panel);border:1px solid rgba(199,161,92,.3);border-radius:10px;overflow:hidden;display:grid;grid-template-columns:1.15fr .85fr;}
+  .oc-left{padding:clamp(28px,3.6vw,42px);}
+  .oc-left h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:25px;color:#f8f5ee;margin-bottom:6px;}
+  .oc-left .ocs{font-size:14px;color:var(--light);line-height:1.6;margin-bottom:22px;}
+  .benlist{list-style:none;display:flex;flex-direction:column;gap:14px;}
+  .benlist li{position:relative;padding-left:34px;font-size:15px;color:#eae4d6;line-height:1.5;}
+  .benlist li .ck{position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;background:rgba(15,157,88,.16);border:1px solid rgba(15,157,88,.5);color:#3fbd7e;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+  .benlist li strong{color:#fff;font-weight:700;}
+  .oc-right{background:linear-gradient(160deg,#0c2c2a,#082220);padding:clamp(28px,3.6vw,40px) clamp(24px,3vw,34px);border-left:1px solid rgba(199,161,92,.2);display:flex;flex-direction:column;justify-content:center;text-align:center;}
+  .anchor-price{font-size:14px;color:var(--muted);margin-bottom:6px;}
+  .anchor-price s{color:#7d8f89;}
+  .strike297{font-family:'Cormorant Garamond',serif;font-size:26px;color:#8fa39b;text-decoration:line-through;text-decoration-color:rgba(199,80,80,.7);line-height:1;margin-bottom:4px;}
+  .bigprice{display:flex;align-items:baseline;justify-content:center;gap:8px;line-height:1;}
+  .bigprice .cur{font-size:22px;color:var(--gold);font-weight:700;}
+  .bigprice .val{font-family:'Mulish',sans-serif;font-weight:800;font-size:64px;color:var(--gold);letter-spacing:-2px;}
+  .parc{font-size:14px;color:var(--light);margin-top:8px;}
+  .parc strong{color:#f5f1e8;}
+  .oc-right .btn{width:100%;margin-top:20px;font-size:15.5px;padding:18px 16px;}
+  .paysafe{display:flex;align-items:center;gap:9px;justify-content:center;margin-top:14px;font-size:12px;color:var(--muted);line-height:1.4;}
+  .paysafe b{color:var(--gold);font-weight:600;}
+  .payname{margin-top:12px;font-size:11.5px;color:var(--muted);line-height:1.5;border-top:1px solid rgba(199,161,92,.16);padding-top:12px;}
+  .payname b{color:#cdd6cf;}
+  @media(max-width:760px){.offer-card{grid-template-columns:1fr;}.oc-right{border-left:none;border-top:1px solid rgba(199,161,92,.2);}}
+
+  /* já paguei / acesso */
+  .postpay{max-width:920px;margin:22px auto 0;background:rgba(255,255,255,.04);border:1px dashed rgba(199,161,92,.4);border-radius:10px;padding:22px 24px;text-align:center;display:none;}
+  .postpay.on{display:block;animation:fadeUp .4s ease both;}
+  .postpay p{font-size:14.5px;color:var(--light);line-height:1.6;margin-bottom:14px;}
+  .postpay p strong{color:#f5f1e8;}
+  .postpay .btn{padding:15px 30px;font-size:14px;}
+  .pp-status{display:flex;align-items:center;gap:10px;justify-content:center;font-size:14.5px;color:#e6ddc9;line-height:1.55;margin-bottom:16px;}
+  .pp-status strong{color:var(--gold);}
+  .spin{width:16px;height:16px;border:2px solid rgba(199,161,92,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ==== PROVA SOCIAL ==== */
+  .proof{background:var(--cream);color:var(--ink);padding:clamp(48px,6vw,80px) 0;}
+  .proof-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:36px;}
+  .proof-head h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(26px,3.6vw,38px);line-height:1.12;letter-spacing:-.3px;max-width:560px;}
+  .grating{text-align:right;}
+  .grating .gr-top{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
+  .grating .gnum{font-family:'Mulish',sans-serif;font-weight:800;font-size:30px;color:var(--ink);letter-spacing:-1px;}
+  .grating .gstars{color:#e7a900;font-size:18px;letter-spacing:1px;}
+  .grating .gsub{font-size:12.5px;color:#7d8f89;margin-top:2px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;}
+  .reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .rev{background:#fff;border-radius:8px;box-shadow:0 20px 50px -36px rgba(18,58,55,.45);padding:26px 24px;display:flex;flex-direction:column;}
+  .rev .rstars{color:#e7a900;font-size:14px;letter-spacing:1.5px;margin-bottom:12px;}
+  .rev p{font-family:'Cormorant Garamond',serif;font-size:18.5px;line-height:1.5;color:#233f3b;font-style:italic;flex:1;}
+  .rev .who{margin-top:18px;display:flex;align-items:center;gap:11px;}
+  .rev .av{width:38px;height:38px;border-radius:50%;background:#0f322f;color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;flex-shrink:0;}
+  .rev .nm{font-weight:700;font-size:13.5px;color:var(--ink);}
+  .rev .rl{font-size:11.5px;color:#7d8f89;}
+  @media(max-width:820px){.reviews{grid-template-columns:1fr;}.proof-head{flex-direction:column;align-items:flex-start;}.grating{text-align:left;}.grating .gr-top{justify-content:flex-start;}}
+
+  /* ==== FAQ ==== */
+  .faq{background:var(--dark);color:#f5f1e8;padding:clamp(48px,6vw,80px) 0;}
+  .faq-head{text-align:center;max-width:640px;margin:0 auto 40px;}
+  .faq-head h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(26px,3.6vw,40px);letter-spacing:-.3px;margin-top:10px;}
+  .faq-list{max-width:820px;margin:0 auto;}
+  .qa{border-bottom:1px solid rgba(199,161,92,.18);}
+  .qa button{width:100%;background:none;border:none;color:#f5f1e8;font-family:'Mulish',sans-serif;font-size:17px;font-weight:700;text-align:left;padding:22px 40px 22px 0;cursor:pointer;position:relative;line-height:1.4;}
+  .qa button::after{content:"+";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:24px;color:var(--gold);font-weight:400;transition:transform .25s;}
+  .qa.open button::after{transform:translateY(-50%) rotate(45deg);}
+  .qa .ans{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .qa.open .ans{max-height:400px;}
+  .qa .ans p{font-size:15px;line-height:1.75;color:var(--light);padding:0 0 24px;}
+  .qa .ans strong{color:#f5f1e8;}
+
+  /* ==== CTA FINAL ==== */
+  .final{display:none;background:radial-gradient(120% 100% at 50% 0%,#12403a,#0b2a28 62%);color:#f5f1e8;padding:clamp(48px,7vw,88px) 0;text-align:center;border-top:1px solid rgba(199,161,92,.16);}
+  .final.on{display:block;}
+  .final h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,4.6vw,50px);line-height:1.1;letter-spacing:-.5px;max-width:800px;margin:0 auto 18px;}
+  .final p{font-size:17px;line-height:1.7;color:var(--light);max-width:640px;margin:0 auto 32px;}
+  .final p strong{color:#f5f1e8;}
+
+  footer{background:var(--dark2);border-top:1px solid rgba(199,161,92,.16);padding:32px 0;}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .foot .fb{display:flex;align-items:center;gap:12px;}
+  .foot .fb img{height:38px;}
+  .foot .fb span{font-size:13px;color:#9aaba4;line-height:1.5;}
+  .foot p{font-size:12px;color:#6f827b;line-height:1.6;text-align:right;}
+
+  /* ==== OVERLAY ANÁLISE PRELIMINAR (pós-pagamento) ==== */
+  .an-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(6,26,24,.97);backdrop-filter:blur(6px);overflow-y:auto;padding:clamp(16px,4vw,40px) 0;}
+  .an-overlay.on{display:block;}
+  .an-gen{max-width:520px;margin:8vh auto;text-align:center;padding:0 20px;}
+  .an-gen .seal{width:88px;height:88px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;}
+  .an-gen .seal .si{font-size:38px;}
+  .an-gen h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:28px;color:#f8f5ee;margin-bottom:20px;}
+  .an-gen .gbar{height:8px;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden;}
+  .an-gen .gbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#e4c98a);transition:width .4s;}
+  .an-gen .gstep{font-size:14.5px;color:var(--light);margin-top:16px;min-height:22px;font-weight:600;}
+  .an-doc{display:none;max-width:820px;margin:0 auto;padding:0 clamp(14px,3vw,20px);}
+  .an-doc.on{display:block;animation:fadeUp .5s ease both;}
+  .doc-done{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(15,157,88,.14);border:1px solid rgba(15,157,88,.45);border-radius:40px;padding:10px 20px;color:#5cd196;font-weight:700;font-size:14px;width:fit-content;margin:0 auto 22px;}
+  .paper{background:#fff;color:#1c2b28;border-radius:8px;box-shadow:0 40px 90px -40px rgba(0,0,0,.6);padding:clamp(26px,4vw,50px);}
+  .paper-head{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:22px;flex-wrap:wrap;}
+  .paper-head img{height:46px;}
+  .paper-head .ph-r{text-align:right;font-size:11.5px;color:#5c6f68;line-height:1.5;}
+  .paper h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(23px,3.4vw,30px);color:var(--ink);line-height:1.15;margin-bottom:6px;}
+  .paper .subttl{font-size:13px;color:#5c6f68;margin-bottom:26px;letter-spacing:.3px;}
+  .psec{margin-bottom:26px;}
+  .psec h4{font-family:'Marcellus',serif;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:#b0894a;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid #e7dfcd;}
+  .psec p{font-size:14.5px;line-height:1.7;color:#37423f;margin-bottom:10px;}
+  .psec p strong{color:var(--ink);}
+  .caso-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;}
+  .caso-grid .ci{font-size:14px;color:#37423f;}
+  .caso-grid .ci b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a9a94;margin-bottom:2px;font-weight:800;}
+  .ptable{width:100%;border-collapse:collapse;}
+  .ptable td{padding:11px 0;border-bottom:1px solid #eee5d3;font-size:14px;vertical-align:top;}
+  .ptable td:last-child{text-align:right;font-weight:800;white-space:nowrap;color:var(--ink);}
+  .ptable tr:last-child td{border-bottom:none;}
+  .ptable .ttot td{border-top:2px solid var(--gold);border-bottom:none;padding-top:14px;font-size:15px;}
+  .ptable .ttot td:last-child{color:#b0894a;font-size:18px;}
+  .attention{background:#f8f4ea;border-radius:8px;padding:4px 20px;}
+  .att-item{padding:16px 0;border-bottom:1px solid #ece3d0;}
+  .att-item:last-child{border-bottom:none;}
+  .att-item .at-h{font-weight:800;font-size:14.5px;color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:8px;}
+  .att-item .at-h .dot{width:8px;height:8px;border-radius:50%;background:#e0a52a;flex-shrink:0;}
+  .att-item p{font-size:13.5px;line-height:1.6;color:#4c605a;margin:0;}
+  .att-item .faixa{display:inline-block;margin-top:7px;background:rgba(15,157,88,.1);color:var(--green2);font-weight:800;font-size:13px;padding:4px 12px;border-radius:20px;}
+  .recover{background:linear-gradient(125% 100% at 18% 0%,#12403a,#0b2a28 62%);border-radius:8px;padding:26px;text-align:center;color:#fff;}
+  .recover .rl{font-family:'Marcellus',serif;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:#a9bab3;margin-bottom:10px;}
+  .recover .rv{font-family:'Mulish',sans-serif;font-weight:800;font-size:clamp(26px,4.6vw,40px);color:var(--gold);letter-spacing:-1px;line-height:1.1;}
+  .recover .rf{font-size:12.5px;color:#9fb0a9;margin-top:10px;line-height:1.5;}
+  .protec{font-size:11.5px;line-height:1.6;color:#7d8f89;border-top:1px solid #e7dfcd;padding-top:16px;margin-top:8px;}
+  .doc-actions{display:flex;gap:14px;margin-top:22px;flex-wrap:wrap;}
+  .doc-actions .btn{flex:1;min-width:220px;}
+  .next-instr{background:rgba(199,161,92,.1);border:1px solid rgba(199,161,92,.3);border-radius:8px;padding:16px 20px;margin-top:20px;text-align:center;font-size:14.5px;line-height:1.6;color:var(--light);}
+  .next-instr strong{color:var(--gold);}
+  @media(max-width:600px){.caso-grid{grid-template-columns:1fr;}.doc-actions .btn{min-width:0;}}
+
+  /* responsivo hero */
+  @media(max-width:880px){
+    .hero-two{grid-template-columns:1fr;gap:0;display:flex;flex-direction:column;}
+    .eyebrow{order:1;}h1.hero-title{order:2;}.hero-sub{order:3;}.badges{order:4;margin-bottom:20px;}
+    .hero-right{order:5;margin-bottom:20px;}.trustline{order:6;justify-content:center;}
+    .fgrid{grid-template-columns:1fr;}
+    .navtag{display:none;}
+    .foot p{text-align:left;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a class="brand" href="#">
+      <img src="assets/logo-web.png" alt="Frank Gonçalves Advocacia">
+      <span><span class="nm">FRANK GONÇALVES</span><br><span class="sub">Advocacia Trabalhista</span></span>
+    </a>
+    <div class="navtag"><span>⚖️ Feito por advogado · <b>OAB/SP 444.466</b></span></div>
+  </nav>
+</header>
+
+<!-- ============ HERO: CALCULADORA + TEXTO ============ -->
+<section class="hero" id="hero">
+  <div class="wrap hero-two">
+    <div class="hero-left">
+      <div class="eyebrow"><span class="line"></span><span class="label">Calculadora de Rescisão</span></div>
+      <h1 class="hero-title">Descubra se a empresa te pagou <em>certo</em> na sua rescisão</h1>
+      <p class="hero-sub">Milhares de trabalhadores recebem <strong>menos do que têm direito</strong> e nunca descobrem. Em 1 minuto, veja quanto você deveria ter recebido — <strong>de graça</strong>.</p>
+      <div class="badges">
+        <span class="badge"><span class="bi">✅</span> 100% Grátis</span>
+        <span class="badge"><span class="bi">⚖️</span> Feito por Advogado</span>
+        <span class="badge"><span class="bi">🔒</span> Sem Cadastro</span>
+        <span class="badge"><span class="bi">⚡</span> Resultado na Hora</span>
+      </div>
+      <div class="trustline">
+        <span class="stars">★★★★★</span>
+        <span class="tt">Escritório com <strong>+107 avaliações 5,0</strong> no Google</span>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="calc-card">
+        <div class="calc-head">
+          <h2>Calcule <b>grátis</b> sua rescisão em 1 minuto</h2>
+          <p>Sem cadastro. Resultado na hora. Feito por advogado.</p>
+        </div>
+        <div class="calc-body">
+          <div class="fgrid">
+            <div class="field" data-req>
+              <label>Data de admissão <span class="qmark" tabindex="0">?<span class="tip">O dia em que você começou a trabalhar na empresa (está na sua carteira de trabalho).</span></span></label>
+              <div class="inwrap"><input type="date" id="f-adm" required><span class="chk">✓</span></div>
+            </div>
+            <div class="field" data-req>
+              <label>Data de saída <span class="qmark" tabindex="0">?<span class="tip">O seu último dia de trabalho na empresa.</span></span></label>
+              <div class="inwrap"><input type="date" id="f-dem" required><span class="chk">✓</span></div>
+            </div>
+            <div class="field money" data-req>
+              <label>Salário bruto <span class="qmark" tabindex="0">?<span class="tip">É o salário registrado na carteira, antes dos descontos — o valor "cheio", sem tirar INSS nem nada.</span></span></label>
+              <div class="inwrap"><span class="rs">R$</span><input type="number" id="f-sal" min="100" step="0.01" placeholder="2.500,00" required><span class="chk">✓</span></div>
+            </div>
+            <div class="field sel" data-req>
+              <label>Motivo da saída <span class="qmark" tabindex="0">?<span class="tip">Sem justa causa = a empresa te mandou embora. Pedido = você pediu para sair. Rescisão indireta = você saiu por falta grave da empresa. Acordo = os dois combinaram a saída.</span></span></label>
+              <div class="inwrap selwrap"><select id="f-mot">
+                <option value="sem_justa_causa">A empresa me demitiu (sem justa causa)</option>
+                <option value="pedido">Eu pedi demissão</option>
+                <option value="rescisao_indireta">Rescisão indireta (falta grave da empresa)</option>
+                <option value="acordo">Acordo entre as partes</option>
+              </select><span class="chk">✓</span></div>
+            </div>
+            <div class="field sel" data-req>
+              <label>Aviso prévio <span class="qmark" tabindex="0">?<span class="tip">Indenizado = você foi mandado embora e não precisou trabalhar o aviso. Trabalhado = você cumpriu os últimos 30 dias.</span></span></label>
+              <div class="inwrap selwrap"><select id="f-aviso">
+                <option value="indenizado">Não trabalhei o aviso (indenizado)</option>
+                <option value="trabalhado">Trabalhei o aviso</option>
+              </select><span class="chk">✓</span></div>
+            </div>
+            <div class="field sel" data-req>
+              <label>Tinha férias vencidas? <span class="qmark" tabindex="0">?<span class="tip">Férias que você já tinha direito e não tirou (mais de 1 ano na empresa sem tirar férias).</span></span></label>
+              <div class="inwrap selwrap"><select id="f-ferias">
+                <option value="nao">Não / não sei</option>
+                <option value="sim">Sim, tinha férias não tiradas</option>
+              </select><span class="chk">✓</span></div>
+            </div>
+            <div class="field full money">
+              <label>Quanto a empresa te pagou? <span style="color:#7d8f89;font-weight:500;text-transform:none;letter-spacing:0;font-size:12px;">(opcional)</span> <span class="qmark" tabindex="0">?<span class="tip">O valor total que você recebeu na rescisão (está no seu TRCT / termo). Preencha para descobrir se pagaram a menos. Não sabe? Deixe em branco.</span></span></label>
+              <div class="inwrap"><span class="rs">R$</span><input type="number" id="f-receb" min="0" step="0.01" placeholder="0,00"></div>
+              <span class="hint">Preencha para descobrir <strong>se pagaram a menos que o devido</strong>.</span>
+            </div>
+            <div class="field full">
+              <label>Seu nome <span style="color:#7d8f89;font-weight:500;text-transform:none;letter-spacing:0;font-size:12px;">(opcional)</span></label>
+              <div class="inwrap"><input type="text" id="f-nome" placeholder="Como quer que apareça no seu documento"></div>
+            </div>
+          </div>
+          <div class="err" id="form-err"></div>
+          <button class="btn btn-green" id="btn-calc" type="button">VER QUANTO TENHO A RECEBER</button>
+          <div class="assur"><span><i>✓</i> Conforme a CLT</span><span><i>✓</i> 100% grátis</span><span><i>✓</i> Sem cadastro</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTADO ============ -->
+<section class="result-sec" id="result-sec">
+  <div class="wrap res-wrap">
+    <div class="proc" id="proc">
+      <h3>Calculando sua rescisão…</h3>
+      <div class="procbar"><i id="procfill"></i></div>
+      <div class="procstep" id="procstep">Somando suas verbas…</div>
+    </div>
+
+    <div class="res-in" id="res-in">
+      <div class="res-eyebrow"><span class="label">Seu resultado</span></div>
+      <div class="totalbox">
+        <div class="tl">Sua rescisão correta seria de aproximadamente</div>
+        <div class="tv" id="r-total">R$ 0,00</div>
+        <div class="tf" id="r-periodo">—</div>
+      </div>
+
+      <div class="diffbox" id="diffbox" style="display:none;">
+        <div class="diff-in">
+          <div class="dcol"><span class="dl">Você deveria receber</span><span class="dv correto" id="d-correto">—</span></div>
+          <div class="dcol"><span class="dl">A empresa te pagou</span><span class="dv pago" id="d-pago">—</span></div>
+          <div class="dcol dest"><span class="dl" id="d-label">Diferença a receber</span><span class="dv gap" id="d-diff">—</span></div>
+        </div>
+        <p class="diff-msg" id="d-msg"></p>
+      </div>
+
+      <div class="amber">
+        <span class="ai">⚠️</span>
+        <p><strong>Atenção:</strong> em quase 8 de cada 10 rescisões faltam valores que o trabalhador nem percebe — aviso prévio errado, FGTS incompleto, médias de horas extras ignoradas. Este é um cálculo <strong>estimado</strong>. Quanto está <strong>realmente faltando</strong> no seu caso só a análise detalhada revela.</p>
+      </div>
+
+      <div class="rescard">
+        <h3>Detalhamento das suas verbas</h3>
+        <p class="rsub">Estimativa bruta conforme a CLT, a partir dos dados que você informou:</p>
+        <div id="r-rows"></div>
+        <div class="disc"><p><strong>Importante:</strong> simulação com base nos dados que você inseriu. Valores brutos (sem INSS/IRRF) e sem considerar horas extras, comissões, adicionais e outras particularidades — que costumam <em>aumentar</em> o valor. Não substitui a análise de um advogado.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OFERTA R$97 ============ -->
+<section class="offer-sec" id="offer-sec">
+  <div class="wrap">
+    <div class="offer-head">
+      <span class="label">O próximo passo</span>
+      <h2>Descubra <em>exatamente</em> quanto estão te devendo</h2>
+      <p>A calculadora te deu a estimativa. O <strong>Parecer Detalhado</strong> mostra, verba por verba, onde a empresa errou — e quanto você pode recuperar.</p>
+    </div>
+    <div class="offer-card">
+      <div class="oc-left">
+        <h3>Parecer Detalhado + Orientação com o Advogado</h3>
+        <p class="ocs">Feito com base nos seus números, revisado por quem entende. Você sai sabendo exatamente o que fazer.</p>
+        <ul class="benlist">
+          <li><span class="ck">✓</span><span>Parecer <strong>completo verba por verba</strong> (saldo, 13º, férias, aviso, FGTS e médias)</span></li>
+          <li><span class="ck">✓</span><span><strong>15 minutos de orientação</strong> direta com o advogado pelo WhatsApp</span></li>
+          <li><span class="ck">✓</span><span>Documento <strong>por escrito</strong> para cobrar a empresa ou usar em processo</span></li>
+          <li><span class="ck">✓</span><span>Análise se <strong>vale a pena entrar na Justiça</strong> e quanto pode receber</span></li>
+        </ul>
+      </div>
+      <div class="oc-right">
+        <div class="anchor-price">Uma consulta trabalhista comum custa <s>a partir de R$ 300</s></div>
+        <div class="strike297">R$ 297</div>
+        <div class="bigprice"><span class="cur">R$</span><span class="val">97</span></div>
+        <div class="parc">ou <strong>3x de R$ 33,90</strong> no cartão</div>
+        <a class="btn btn-green btn-pulse" id="btn-comprar" href="#" target="_blank" rel="noopener">QUERO MEU PARECER DETALHADO</a>
+        <div class="paysafe"><span>🔒</span><span>Pagamento seguro via <b>Pix ou cartão</b></span></div>
+        <div class="payname">Pagamento em nome de <b>Frank Antônio Gonçalves</b> — advogado, OAB/SP 444.466.</div>
+      </div>
+    </div>
+
+    <div class="postpay" id="postpay">
+      <div class="pp-status" id="pp-status"><span class="spin"></span> Aguardando a confirmação do seu pagamento… assim que cair, sua Análise abre <strong>automaticamente</strong>.</div>
+      <p>Pagou e não abriu sozinho? Clique abaixo.</p>
+      <button class="btn btn-green" id="btn-acessar" type="button">JÁ PAGUEI — VERIFICAR AGORA</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROVA SOCIAL ============ -->
+<section class="proof">
+  <div class="wrap">
+    <div class="proof-head">
+      <h2>Confiança de quem já passou por isso</h2>
+      <div class="grating">
+        <div class="gr-top"><span class="gnum">5,0</span><span class="gstars">★★★★★</span></div>
+        <div class="gsub">+107 avaliações no Google</div>
+      </div>
+    </div>
+    <div class="reviews">
+      <div class="rev">
+        <div class="rstars">★★★★★</div>
+        <p>"Fui demitido e achei que estava tudo certo. Fiz o cálculo, paguei o parecer e descobri que faltava mais de R$ 4 mil. Recuperei com ajuda do Dr. Frank."</p>
+        <div class="who"><span class="av">R</span><span><span class="nm">Rafael M.</span><br><span class="rl">Rescisão sem justa causa</span></span></div>
+      </div>
+      <div class="rev">
+        <div class="rstars">★★★★★</div>
+        <p>"Atendimento rápido e sem enrolação. Em 15 minutos entendi meus direitos melhor do que em anos. Valeu cada centavo."</p>
+        <div class="who"><span class="av">P</span><span><span class="nm">Patrícia S.</span><br><span class="rl">Orientação por WhatsApp</span></span></div>
+      </div>
+      <div class="rev">
+        <div class="rstars">★★★★★</div>
+        <p>"O documento me deu segurança para cobrar a empresa. Resolveram sem nem precisar de processo. Recomendo demais."</p>
+        <div class="who"><span class="av">J</span><span><span class="nm">Jonas T.</span><br><span class="rl">Parecer detalhado</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq">
+  <div class="wrap">
+    <div class="faq-head">
+      <span class="label">Perguntas Frequentes</span>
+      <h2>Tirando suas dúvidas</h2>
+    </div>
+    <div class="faq-list" id="faq-list">
+      <div class="qa"><button type="button">A calculadora não é grátis? Por que pagar?</button><div class="ans"><p>A calculadora dá a <strong>estimativa geral, de graça</strong>. O Parecer é a <strong>análise humana feita por advogado</strong>, que encontra o que a conta automática não vê (médias, adicionais, erros de FGTS) e serve como <strong>documento por escrito</strong> para cobrar a empresa.</p></div></div>
+      <div class="qa"><button type="button">E se não estiverem me devendo nada?</button><div class="ans"><p>Você tem a <strong>segurança por escrito</strong> de que recebeu certo — e a tranquilidade de saber. Mas, na prática, na maioria dos casos <strong>algo está faltando</strong>, e é justamente isso que a análise revela.</p></div></div>
+      <div class="qa"><button type="button">Como funcionam os 15 minutos de orientação?</button><div class="ans"><p>Após o pagamento, você recebe sua Análise Preliminar e um botão para <strong>falar direto com o advogado no WhatsApp</strong>. É lá que você agenda e tira suas dúvidas sobre o caso.</p></div></div>
+      <div class="qa"><button type="button">É seguro pagar?</button><div class="ans"><p>Sim. O pagamento é processado por <strong>gateway seguro</strong> (Pix ou cartão), em nome de <strong>Frank Antônio Gonçalves</strong>, advogado inscrito na OAB/SP sob o nº 444.466.</p></div></div>
+      <div class="qa"><button type="button">Quanto tempo tenho para cobrar o que falta?</button><div class="ans"><p>Você pode cobrar verbas rescisórias não pagas por até <strong>2 anos após a saída da empresa</strong> (e reclamar os últimos 5 anos do contrato). Descobrir o valor é o primeiro passo — quanto antes, melhor.</p></div></div>
+      <div class="qa"><button type="button">Recebo a análise na hora?</button><div class="ans"><p>Sim. Assim que o pagamento é confirmado, sua <strong>Análise Preliminar Personalizada</strong> é gerada na tela na hora, com opção de <strong>baixar em PDF</strong> para guardar.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="final" id="final">
+  <div class="wrap">
+    <h2>Não deixe seu dinheiro na mão da empresa</h2>
+    <p>Você trabalhou por cada centavo. Descubra por <strong>R$ 97</strong> se estão te devendo milhares — e tenha o documento para cobrar o que é seu.</p>
+    <a class="btn btn-green btn-pulse" id="btn-comprar2" href="#" target="_blank" rel="noopener">QUERO MEU PARECER DETALHADO</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div class="fb"><img src="assets/logo-web.png" alt="Frank Gonçalves Advocacia"><span>Frank Gonçalves Advocacia<br>OAB/SP 444.466</span></div>
+    <p>© 2026 Todos os direitos reservados.<br>Simulação informativa — não constitui parecer jurídico.</p>
+  </div>
+</footer>
+
+<!-- ============ OVERLAY: ANÁLISE PRELIMINAR ============ -->
+<div class="an-overlay" id="an-overlay">
+  <div class="an-gen" id="an-gen">
+    <div class="seal"><span class="si">⚖️</span></div>
+    <h3>Gerando sua Análise Preliminar…</h3>
+    <div class="gbar"><i id="genfill"></i></div>
+    <div class="gstep" id="genstep">Analisando suas verbas…</div>
+  </div>
+
+  <div class="an-doc" id="an-doc">
+    <div class="doc-done">✓ Análise concluída</div>
+    <div class="paper" id="paper">
+      <div class="paper-head">
+        <img src="assets/logo-web.png" alt="Frank Gonçalves Advocacia">
+        <div class="ph-r" id="ph-date">—</div>
+      </div>
+      <h1>Análise Preliminar Personalizada</h1>
+      <div class="subttl" id="an-nome">Preparada para você</div>
+
+      <div class="psec">
+        <h4>Resumo do seu caso</h4>
+        <div class="caso-grid" id="caso-grid"></div>
+      </div>
+
+      <div class="psec">
+        <h4>Estimativa da sua rescisão correta</h4>
+        <table class="ptable" id="an-table"></table>
+      </div>
+
+      <div class="psec">
+        <h4>Pontos de atenção no seu caso</h4>
+        <div class="attention" id="an-attention"></div>
+      </div>
+
+      <div class="psec">
+        <h4>Estimativa de valor que pode estar faltando</h4>
+        <div class="recover">
+          <div class="rl">No seu caso, o valor a recuperar pode ficar entre</div>
+          <div class="rv" id="an-faixa">—</div>
+          <div class="rf">Faixa estimada. O valor exato depende da análise dos seus documentos pelo advogado.</div>
+        </div>
+      </div>
+
+      <div class="psec">
+        <h4>Seu próximo passo</h4>
+        <p style="font-size:14.5px;line-height:1.7;color:#37423f;">O advogado vai <strong>revisar estes números com você</strong> nos seus 15 minutos de orientação e te dizer se vale a pena buscar esses valores — e como fazer isso.</p>
+      </div>
+
+      <div class="protec" id="an-protec">Esta é uma análise preliminar automatizada, de caráter informativo, baseada nos dados que você inseriu. A avaliação jurídica definitiva do seu caso será feita pelo advogado na sua orientação por WhatsApp.</div>
+    </div>
+
+    <div class="doc-actions">
+      <button class="btn" id="btn-pdf" type="button">📄 Baixar em PDF</button>
+      <a class="btn btn-green btn-pulse" id="btn-whats" href="#" target="_blank" rel="noopener">💬 Falar com o Advogado Agora</a>
+    </div>
+    <div class="next-instr">Sua Análise está pronta. Agora clique em <strong>"Falar com o Advogado Agora"</strong> para agendar seus 15 minutos e transformar esta análise em um plano de ação.</div>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   CONFIGURAÇÃO
+   Esta página roda no Vercel. O botão de compra gera o pagamento no
+   seu Mercado Pago e a Análise só abre após o pagamento ser aprovado.
+   ================================================================== */
+var API      = "";                 // vazio = mesmo domínio (Vercel). Não precisa mexer.
+var WHATSAPP = "5519995564036";    // WhatsApp do advogado (só liberado após pagar)
+/* ================================================================== */
+
+var $ = function(id){ return document.getElementById(id); };
+var fmt = function(v){ return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); };
+var DADOS = null; // guarda o cálculo para a Análise
+
+/* ---------- CÁLCULO CLT (roda no navegador — grátis) ---------- */
+var DAY = 86400000;
+function diffDays(a,b){ return Math.round((b-a)/DAY); }
+function mesesAvos(start,end){
+  if(!start||!end||end<start) return 0;
+  var avos=0,y=start.getFullYear(),m=start.getMonth();
+  while(y<end.getFullYear()||(y===end.getFullYear()&&m<=end.getMonth())){
+    var mStart=new Date(y,m,1),mEnd=new Date(y,m+1,0);
+    var s=start>mStart?start:mStart,e=end<mEnd?end:mEnd;
+    if(diffDays(s,e)+1>=15) avos++;
+    m++; if(m>11){m=0;y++;}
+  }
+  return avos;
+}
+function calcular(admStr,demStr,sal,motivo,aviso,feriasVenc,recebido){
+  var adm=new Date(admStr+'T12:00:00'), dem=new Date(demStr+'T12:00:00');
+  sal=parseFloat(sal);
+  var full=(motivo==='sem_justa_causa'||motivo==='rescisao_indireta'); // direitos plenos
+  var acordo=(motivo==='acordo');
+  var verbas=[];
+  var totalDias=diffDays(adm,dem);
+  var anosCompletos=Math.floor(totalDias/365);
+
+  var diasAviso=0;
+  if((full||acordo)&&aviso==='indenizado'){
+    var base=Math.min(30+3*anosCompletos,90);
+    diasAviso = acordo ? Math.round(base/2) : base;
+  }
+  var fim=new Date(dem); fim.setDate(fim.getDate()+diasAviso);
+
+  var diasMes=dem.getDate();
+  verbas.push({n:'Saldo de salário',d:diasMes+(diasMes===1?' dia trabalhado':' dias trabalhados')+' no mês da saída',v:(sal/30)*diasMes});
+
+  if((full||acordo)&&aviso==='indenizado'){
+    verbas.push({n:'Aviso prévio indenizado',d:diasAviso+' dias'+(acordo?' (metade, por ser acordo)':' (30 + 3 por ano, limite de 90)'),v:(sal/30)*diasAviso});
+  } else if(full||acordo){
+    verbas.push({n:'Aviso prévio trabalhado',d:'Pago junto com o salário do período trabalhado',v:0,info:true});
+  }
+
+  var inicio13=adm>new Date(dem.getFullYear(),0,1)?adm:new Date(dem.getFullYear(),0,1);
+  var avos13=mesesAvos(inicio13,fim);
+  verbas.push({n:'13º salário proporcional',d:avos13+'/12 avos do ano'+(diasAviso?' (com projeção do aviso)':''),v:(sal/12)*avos13});
+
+  var anosAq=0,annivStart=new Date(adm);
+  while(true){ var next=new Date(adm); next.setFullYear(adm.getFullYear()+anosAq+1); if(next<=fim){anosAq++;annivStart=next;}else break; }
+  var avosFer=mesesAvos(annivStart,fim);
+  var ferProp=(sal/12)*avosFer;
+  verbas.push({n:'Férias proporcionais + 1/3',d:avosFer+'/12 avos, com o terço constitucional',v:ferProp+ferProp/3});
+
+  if(feriasVenc==='sim'){
+    verbas.push({n:'Férias vencidas + 1/3',d:'1 período completo não gozado, com o terço',v:sal+sal/3});
+  }
+
+  if(full||acordo){
+    var mesesTot=mesesAvos(adm,fim);
+    var depositoEstimado=sal*0.08*mesesTot;
+    var pct=acordo?0.20:0.40;
+    verbas.push({n:'Multa de '+(acordo?'20':'40')+'% do FGTS',d:'Estimativa sobre ~'+mesesTot+' meses de depósitos (8% do salário). O valor exato depende do seu extrato do FGTS.',v:depositoEstimado*pct,est:true});
+  }
+
+  var nota=null;
+  if(motivo==='pedido') nota='No pedido de demissão não há aviso prévio indenizado pela empresa nem multa do FGTS. Se o aviso não for cumprido, a empresa pode descontá-lo.';
+  else if(acordo) nota='No acordo (distrato), o aviso indenizado é pago pela metade e a multa do FGTS é de 20%. Você pode sacar 80% do FGTS.';
+  else if(motivo==='rescisao_indireta') nota='A rescisão indireta dá os mesmos direitos da demissão sem justa causa, mas normalmente precisa ser reconhecida pela Justiça.';
+
+  var total=verbas.reduce(function(s,x){return s+x.v;},0);
+  var meses=Math.round((totalDias%365)/30);
+
+  var comparativo=null;
+  var pago=parseFloat(recebido);
+  if(!isNaN(pago)&&pago>=0){ var d=total-pago; comparativo={pago:pago,diferenca:d,faltou:d>1}; }
+
+  return {verbas:verbas,total:total,nota:nota,totalDias:totalDias,anosCompletos:anosCompletos,meses:meses,comparativo:comparativo,
+          motivo:motivo,aviso:aviso,feriasVenc:feriasVenc,sal:sal,admStr:admStr,demStr:demStr};
+}
+
+/* ---------- feedback verde ao preencher ---------- */
+document.querySelectorAll('.field[data-req]').forEach(function(f){
+  var inp=f.querySelector('input,select');
+  function upd(){ if(inp.value && inp.value!==''){ f.classList.add('ok'); } else { f.classList.remove('ok'); } }
+  inp.addEventListener('input',upd); inp.addEventListener('change',upd); upd();
+});
+
+/* ---------- botão CALCULAR ---------- */
+$('btn-calc').addEventListener('click', function(){
+  var err=$('form-err'); err.classList.remove('on');
+  var adm=$('f-adm').value, dem=$('f-dem').value, sal=parseFloat($('f-sal').value);
+  if(!adm||!dem||!sal||sal<=0){ err.textContent='Preencha a admissão, a saída e o salário para calcular.'; err.classList.add('on'); return; }
+  if(new Date(dem)<=new Date(adm)){ err.textContent='A data de saída precisa ser depois da admissão.'; err.classList.add('on'); return; }
+
+  DADOS = calcular(adm,dem,sal,$('f-mot').value,$('f-aviso').value,$('f-ferias').value,$('f-receb').value);
+  DADOS.nome = ($('f-nome').value||'').trim();
+  try{ localStorage.setItem('frank_calc', JSON.stringify(DADOS)); }catch(e){}
+
+  // mostra seção resultado + animação de processamento
+  $('result-sec').classList.add('on');
+  $('res-in').classList.remove('on');
+  $('proc').style.display='block';
+  $('result-sec').scrollIntoView({behavior:'smooth'});
+  rodarProcessamento();
+});
+
+function rodarProcessamento(){
+  var steps=['Somando suas verbas…','Comparando com a CLT…','Conferindo aviso, 13º e férias…','Finalizando seu resultado…'];
+  var i=0, fill=$('procfill');
+  $('procstep').textContent=steps[0]; fill.style.width='8%';
+  var t=setInterval(function(){
+    i++;
+    if(i<steps.length){ $('procstep').textContent=steps[i]; fill.style.width=(8+i*30)+'%'; }
+    else{ clearInterval(t); fill.style.width='100%'; setTimeout(revelarResultado,350); }
+  },430);
+}
+
+function revelarResultado(){
+  $('proc').style.display='none';
+  $('res-in').classList.add('on');
+  var d=DADOS;
+  // período
+  var anos=d.anosCompletos;
+  $('r-periodo').textContent='Contrato de '+(anos>0?anos+(anos===1?' ano':' anos')+' e ':'')+d.meses+' meses · valores brutos conforme a CLT';
+  // count-up
+  animarValor($('r-total'), d.total, 1200);
+  // comparativo
+  var c=d.comparativo;
+  if(c){
+    $('diffbox').style.display='block';
+    $('d-correto').textContent=fmt(d.total);
+    $('d-pago').textContent=fmt(c.pago);
+    var dEl=$('d-diff'),lEl=$('d-label'),mEl=$('d-msg');
+    if(c.faltou){
+      dEl.textContent=fmt(c.diferenca); dEl.className='dv gap'; lEl.textContent='Diferença a receber';
+      mEl.innerHTML='Pelos seus dados, pode faltar <strong>'+fmt(c.diferenca)+'</strong> na sua rescisão. Vale a pena um advogado analisar o seu caso.';
+    }else{
+      dEl.textContent=fmt(Math.abs(c.diferenca)); dEl.className='dv gap neg'; lEl.textContent='Situação';
+      mEl.innerHTML='O valor pago está dentro do esperado. Ainda assim, só a análise dos documentos confirma se não há verbas esquecidas.';
+    }
+  }else{ $('diffbox').style.display='none'; }
+  // verbas
+  $('r-rows').innerHTML = d.verbas.map(function(v){
+    return '<div class="rrow"><div><div class="rn">'+v.n+(v.est?' <span style="font-size:11px;letter-spacing:1px;color:#b0894a;">(ESTIMATIVA)</span>':'')+'</div><div class="rd">'+v.d+'</div></div><div class="rv'+(v.est?' est':'')+'">'+(v.info?'—':fmt(v.v))+'</div></div>';
+  }).join('') + (d.nota?'<div class="rrow"><div><div class="rd" style="max-width:100%;">'+d.nota+'</div></div></div>':'');
+  // revela oferta + FAQ + CTA final
+  $('offer-sec').classList.add('on');
+  $('final').classList.add('on');
+}
+
+function animarValor(el,alvo,dur){
+  var ini=0, t0=null;
+  function frame(ts){
+    if(!t0) t0=ts;
+    var p=Math.min((ts-t0)/dur,1);
+    var eased=1-Math.pow(1-p,3);
+    el.textContent=fmt(ini+(alvo-ini)*eased);
+    if(p<1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- botões de compra (via Vercel + Mercado Pago) ---------- */
+var REF=null, pollTimer=null;
+function comprar(){
+  if(!DADOS){ try{ DADOS=JSON.parse(localStorage.getItem('frank_calc')); }catch(e){} }
+  if(!DADOS){ alert('Faça o cálculo primeiro, por favor.'); return; }
+  var btns=[$('btn-comprar'),$('btn-comprar2')];
+  btns.forEach(function(b){ if(b){ b.dataset.txt=b.textContent; b.textContent='Gerando pagamento…'; b.style.pointerEvents='none'; }});
+  fetch(API+'/api/criar-pagamento',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({adm:DADOS.admStr,dem:DADOS.demStr,sal:DADOS.sal,motivo:DADOS.motivo,aviso:DADOS.aviso,ferias:DADOS.feriasVenc,nome:DADOS.nome||'',recebido:(DADOS.comparativo?String(DADOS.comparativo.pago):'')})
+  }).then(function(r){return r.json();}).then(function(d){
+    btns.forEach(function(b){ if(b){ b.textContent=b.dataset.txt||'QUERO MEU PARECER DETALHADO'; b.style.pointerEvents=''; }});
+    if(!d.initPoint){ alert('Não foi possível gerar o pagamento.'+(d.detalhe?('\n\n'+d.detalhe):(d.erro?('\n\n'+d.erro):''))); return; }
+    REF=d.ref;
+    window.open(d.initPoint,'_blank','noopener');
+    $('postpay').classList.add('on');
+    $('postpay').scrollIntoView({behavior:'smooth',block:'center'});
+    iniciarPolling();
+  }).catch(function(){
+    btns.forEach(function(b){ if(b){ b.textContent=b.dataset.txt||'QUERO MEU PARECER DETALHADO'; b.style.pointerEvents=''; }});
+    alert('Erro de conexão ao gerar o pagamento. Tente novamente.');
+  });
+}
+function iniciarPolling(){ pararPolling(); pollTimer=setInterval(checarStatus,4000); }
+function pararPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+function checarStatus(){
+  if(!REF) return;
+  fetch(API+'/api/status?ref='+encodeURIComponent(REF)).then(function(r){return r.json();}).then(function(d){
+    if(d.pago){ pararPolling(); abrirAnalise(); }
+  }).catch(function(){});
+}
+$('btn-comprar').addEventListener('click', function(e){ e.preventDefault(); comprar(); });
+$('btn-comprar2').addEventListener('click', function(e){ e.preventDefault(); comprar(); });
+$('btn-acessar').addEventListener('click', function(){
+  var b=$('btn-acessar'); b.disabled=true; var old=b.textContent; b.textContent='Verificando…';
+  if(!REF){ alert('Clique primeiro em "QUERO MEU PARECER" para gerar seu pagamento.'); b.disabled=false; b.textContent=old; return; }
+  checarStatus();
+  setTimeout(function(){ b.disabled=false; b.textContent=old; if(!$('an-overlay').classList.contains('on')){ $('pp-status').innerHTML='<span class="spin"></span> Pagamento ainda não identificado. Se você acabou de pagar, aguarde alguns segundos — a liberação é automática.'; } },1600);
+});
+
+/* ---------- ANÁLISE PRELIMINAR (pós-pagamento) ---------- */
+function abrirAnalise(){
+  if(!DADOS){ try{ DADOS=JSON.parse(localStorage.getItem('frank_calc')); }catch(e){} }
+  if(!DADOS){ alert('Não encontramos seus dados. Refaça o cálculo, por favor.'); return; }
+  $('an-overlay').classList.add('on');
+  $('an-doc').classList.remove('on');
+  $('an-gen').style.display='block';
+  document.body.style.overflow='hidden';
+  var steps=['Analisando suas verbas…','Comparando com a CLT…','Identificando valores que costumam faltar…','Montando seu documento…'];
+  var i=0, fill=$('genfill');
+  $('genstep').textContent=steps[0]; fill.style.width='8%';
+  var t=setInterval(function(){
+    i++;
+    if(i<steps.length){ $('genstep').textContent=steps[i]; fill.style.width=(8+i*30)+'%'; }
+    else{ clearInterval(t); fill.style.width='100%'; setTimeout(montarAnalise,450); }
+  },620);
+}
+
+var MOTIVO_LABEL={sem_justa_causa:'Demissão sem justa causa',pedido:'Pedido de demissão',rescisao_indireta:'Rescisão indireta',acordo:'Acordo entre as partes'};
+
+function montarAnalise(){
+  var d=DADOS;
+  $('an-gen').style.display='none';
+  $('an-doc').classList.add('on');
+  // data e nome
+  var dt=new Date();
+  $('ph-date').innerHTML='Emitida em '+dt.toLocaleDateString('pt-BR')+'<br>Frank Gonçalves Advocacia · OAB/SP 444.466';
+  $('an-nome').textContent = d.nome ? ('Preparada para '+d.nome) : 'Preparada para você';
+  // resumo do caso
+  var anos=d.anosCompletos;
+  var periodo=(anos>0?anos+(anos===1?' ano':' anos')+' e ':'')+d.meses+' meses';
+  $('caso-grid').innerHTML=
+    '<div class="ci"><b>Salário informado</b>'+fmt(d.sal)+'</div>'+
+    '<div class="ci"><b>Tempo de empresa</b>'+periodo+'</div>'+
+    '<div class="ci"><b>Motivo da saída</b>'+(MOTIVO_LABEL[d.motivo]||'—')+'</div>'+
+    '<div class="ci"><b>Aviso prévio</b>'+(d.aviso==='indenizado'?'Indenizado':'Trabalhado')+'</div>';
+  // tabela de verbas
+  var rows=d.verbas.map(function(v){
+    return '<tr><td>'+v.n+(v.est?' (estimativa)':'')+'</td><td>'+(v.info?'—':fmt(v.v))+'</td></tr>';
+  }).join('');
+  rows+='<tr class="ttot"><td>Total estimado da rescisão</td><td>'+fmt(d.total)+'</td></tr>';
+  $('an-table').innerHTML=rows;
+  // pontos de atenção (condicional)
+  $('an-attention').innerHTML = pontosAtencao(d).map(function(a){
+    return '<div class="att-item"><div class="at-h"><span class="dot"></span>'+a.t+'</div><p>'+a.p+'</p>'+(a.f?'<span class="faixa">Pode faltar: '+a.f+'</span>':'')+'</div>';
+  }).join('');
+  // faixa de valor a recuperar
+  var baseFalta = (d.comparativo&&d.comparativo.faltou) ? d.comparativo.diferenca : d.total*0.12;
+  var lo=baseFalta*0.7, hi=baseFalta*1.6;
+  if(d.motivo==='rescisao_indireta'){ hi=baseFalta*2.2; }
+  $('an-faixa').textContent=fmt(lo)+' e '+fmt(hi);
+  // whatsapp liberado (só aqui!)
+  var msg='Olá, Dr. Frank! Paguei minha Análise Preliminar de rescisão e quero agendar meus 15 minutos de orientação.'+(d.nome?(' Meu nome é '+d.nome+'.'):'')+' Pela análise, meu total estimado foi de '+fmt(d.total)+'.';
+  $('btn-whats').href='https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(msg);
+  $('an-overlay').scrollTop=0;
+}
+
+function pontosAtencao(d){
+  var out=[];
+  var falta=function(mult){ var b=(d.comparativo&&d.comparativo.faltou)?d.comparativo.diferenca:d.sal; return fmt(b*mult*0.4)+' a '+fmt(b*mult); };
+  if(d.motivo==='sem_justa_causa'){
+    out.push({t:'Multa de 40% do FGTS',p:'É o item pago errado com mais frequência. A empresa costuma calcular a multa sobre um saldo de FGTS menor do que o real, ou esquecer competências. Confira seu extrato do FGTS.',f:falta(0.5)});
+    out.push({t:'Aviso prévio proporcional',p:'A cada ano de empresa você ganha +3 dias de aviso (até 90). Muitas empresas pagam só os 30 dias, ignorando os dias extras a que você tem direito.',f:falta(0.3)});
+    out.push({t:'Médias de horas extras e adicionais',p:'Se você fazia horas extras, adicional noturno, insalubridade ou periculosidade, essas médias entram no 13º, nas férias e no aviso — e quase nunca são calculadas certo.',f:falta(0.4)});
+  } else if(d.motivo==='pedido'){
+    out.push({t:'Saldo de salário e férias proporcionais',p:'Mesmo pedindo demissão, você tem direito a saldo de salário, 13º e férias proporcionais + 1/3. Confira se todos foram pagos corretamente.',f:falta(0.25)});
+    out.push({t:'Desconto indevido de aviso prévio',p:'A empresa só pode descontar o aviso não cumprido dentro do limite legal. Descontos acima disso são indevidos e recuperáveis.',f:falta(0.2)});
+    out.push({t:'Férias vencidas acumuladas',p:'Se você tinha férias vencidas não gozadas, elas devem ser pagas em dobro em alguns casos. Ponto que costuma passar batido.',f:falta(0.3)});
+  } else if(d.motivo==='rescisao_indireta'){
+    out.push({t:'Cenário de maior valor potencial',p:'Na rescisão indireta você tem os mesmos direitos da demissão sem justa causa (aviso, 40% do FGTS, seguro-desemprego) — mas isso quase sempre precisa ser reconhecido na Justiça.',f:falta(0.7)});
+    out.push({t:'Verbas somadas ao processo',p:'Além das verbas rescisórias, é comum somar horas extras, diferenças salariais e danos — o que pode elevar bastante o valor total a receber.',f:falta(0.6)});
+    out.push({t:'Provas do motivo da saída',p:'O sucesso depende de comprovar a falta grave da empresa. O advogado vai te orientar sobre quais provas reunir.',f:null});
+  } else if(d.motivo==='acordo'){
+    out.push({t:'Regra do acordo (art. 484-A)',p:'No acordo, o aviso indenizado é pago pela metade e a multa do FGTS é de 20% (não 40%). Você saca 80% do FGTS. Confira se a empresa aplicou os percentuais certos.',f:falta(0.4)});
+    out.push({t:'Acordo simulado (pressão da empresa)',p:'Se a empresa te forçou a "aceitar um acordo" numa demissão que era sem justa causa, você pode ter direito à diferença (os outros 20% da multa e o aviso cheio).',f:falta(0.5)});
+    out.push({t:'Médias e adicionais',p:'Assim como nos demais casos, médias de horas extras e adicionais costumam ficar de fora do cálculo do acordo.',f:falta(0.3)});
+  }
+  if(d.anosCompletos>=3){
+    out.push({t:'Tempo de casa longo ('+d.anosCompletos+' anos)',p:'Contratos mais longos acumulam mais direitos (férias, aviso proporcional, FGTS) e concentram mais chances de erro no cálculo da empresa.',f:null});
+  }
+  if(d.sal>=4000){
+    out.push({t:'Salário acima da média',p:'Salários mais altos costumam ter variáveis (comissões, bônus, horas extras) que elevam a base de cálculo — e raramente são computadas corretamente na rescisão.',f:null});
+  }
+  return out;
+}
+
+/* ---------- PDF ---------- */
+$('btn-pdf').addEventListener('click', function(){
+  try{ gerarPDF(); }catch(e){ alert('Não foi possível gerar o PDF. Tente novamente.'); }
+});
+function gerarPDF(){
+  var d=DADOS;
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({unit:'pt',format:'a4'});
+  var W=doc.internal.pageSize.getWidth(), M=48, y=54, gold=[176,137,74], ink=[18,58,55], gray=[110,120,116];
+  function line(){ doc.setDrawColor(220,215,200); doc.line(M,y,W-M,y); }
+  // cabeçalho
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.text('FRANK GONÇALVES ADVOCACIA',M,y);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(gray[0],gray[1],gray[2]);
+  doc.text('OAB/SP 444.466',W-M,y,{align:'right'}); y+=8; line(); y+=26;
+  doc.setFont('times','bold'); doc.setFontSize(20); doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.text('Análise Preliminar Personalizada',M,y); y+=18;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(gray[0],gray[1],gray[2]);
+  doc.text((d.nome?('Preparada para '+d.nome):'Preparada para você')+'  ·  Emitida em '+new Date().toLocaleDateString('pt-BR'),M,y); y+=26;
+  // resumo
+  function head(t){ doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(gold[0],gold[1],gold[2]); doc.text(t.toUpperCase(),M,y); y+=6; line(); y+=16; }
+  head('Resumo do seu caso');
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(50,60,57);
+  var anos=d.anosCompletos, periodo=(anos>0?anos+(anos===1?' ano':' anos')+' e ':'')+d.meses+' meses';
+  [['Salário informado',fmt(d.sal)],['Tempo de empresa',periodo],['Motivo da saída',MOTIVO_LABEL[d.motivo]||'—'],['Aviso prévio',d.aviso==='indenizado'?'Indenizado':'Trabalhado']].forEach(function(r){
+    doc.setFont('helvetica','bold'); doc.text(r[0]+': ',M,y); var w=doc.getTextWidth(r[0]+': ');
+    doc.setFont('helvetica','normal'); doc.text(String(r[1]),M+w,y); y+=16;
+  });
+  y+=10;
+  // tabela
+  head('Estimativa da sua rescisão correta');
+  doc.setFontSize(10.5);
+  d.verbas.forEach(function(v){
+    doc.setTextColor(50,60,57); doc.setFont('helvetica','normal');
+    var nm=v.n+(v.est?' (estimativa)':'');
+    doc.text(nm,M,y);
+    doc.text(v.info?'—':fmt(v.v),W-M,y,{align:'right'}); y+=16;
+    if(y>760){ doc.addPage(); y=54; }
+  });
+  y+=2; doc.setDrawColor(gold[0],gold[1],gold[2]); doc.setLineWidth(1.2); doc.line(M,y,W-M,y); doc.setLineWidth(1); y+=16;
+  doc.setFont('helvetica','bold'); doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.text('Total estimado da rescisão',M,y); doc.setTextColor(gold[0],gold[1],gold[2]); doc.text(fmt(d.total),W-M,y,{align:'right'}); y+=26;
+  // pontos de atenção
+  if(y>640){ doc.addPage(); y=54; }
+  head('Pontos de atenção no seu caso');
+  pontosAtencao(d).forEach(function(a){
+    if(y>720){ doc.addPage(); y=54; }
+    doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(ink[0],ink[1],ink[2]);
+    doc.text('• '+a.t,M,y); y+=15;
+    doc.setFont('helvetica','normal'); doc.setTextColor(70,80,77);
+    var lines=doc.splitTextToSize(a.p,W-M*2-10);
+    doc.text(lines,M+10,y); y+=lines.length*13+4;
+    if(a.f){ doc.setFont('helvetica','bold'); doc.setTextColor(12,130,72); doc.text('Pode faltar: '+a.f,M+10,y); y+=16; }
+    y+=4;
+  });
+  // faixa
+  if(y>680){ doc.addPage(); y=54; }
+  head('Estimativa de valor que pode estar faltando');
+  var baseFalta=(d.comparativo&&d.comparativo.faltou)?d.comparativo.diferenca:d.total*0.12;
+  var lo=baseFalta*0.7, hi=baseFalta*(d.motivo==='rescisao_indireta'?2.2:1.6);
+  doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(gold[0],gold[1],gold[2]);
+  doc.text('Entre '+fmt(lo)+' e '+fmt(hi),M,y); y+=22;
+  // proteção
+  if(y>700){ doc.addPage(); y=54; }
+  doc.setFont('helvetica','italic'); doc.setFontSize(8.5); doc.setTextColor(130,140,136);
+  var prot=doc.splitTextToSize('Esta é uma análise preliminar automatizada, de caráter informativo, baseada nos dados que você inseriu. A avaliação jurídica definitiva do seu caso será feita pelo advogado na sua orientação por WhatsApp. Não constitui parecer jurídico.',W-M*2);
+  doc.text(prot,M,y);
+  doc.save('Analise-Preliminar-Frank-Goncalves.pdf');
+}
+
+/* ---------- FAQ acordeão ---------- */
+document.querySelectorAll('#faq-list .qa button').forEach(function(b){
+  b.addEventListener('click', function(){ b.parentElement.classList.toggle('open'); });
+});
+</script>
+</body>
+</html>
